@@ -1,4 +1,13 @@
-import { Box, Button, Flex, Input, Text } from "@chakra-ui/core";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Input,
+  Link as ChackraLink,
+  Text,
+} from "@chakra-ui/core";
+import Link from "next/link";
 import { MdPhotoCamera } from "react-icons/md";
 
 export default function Login() {
@@ -6,47 +15,90 @@ export default function Login() {
     <Flex
       width={"100vw"}
       height={"100vh"}
-      backgroundColor={"gray.400"}
-      justifyContent={"center"}
+      flexDir={"column"}
       alignItems={"center"}
-      boxShadow="md"
     >
       <Flex
-        flexDir={"column"}
+        position={"fixed"}
+        top={0}
+        zIndex={999}
+        width={"100%"}
+        justifyContent={"space-between"}
         alignItems={"center"}
-        justifyContent={"center"}
-        backgroundColor={"white"}
-        border={0}
-        borderRadius={"sm"}
       >
-        <Text display={"flex"} padding={4} fontSize="2xl" textAlign={"center"}>
-          <MdPhotoCamera size={36} color={"#4361ee"} />{" "}
-          <Text paddingX={4}>PhotoBook</Text>
+        <Text display={"flex"} padding={6} fontSize="2xl" textAlign={"center"}>
+          <MdPhotoCamera size={32} color={"#4361ee"} />
+          <div>
+            <Text paddingX={4}>PhotoBook</Text>
+          </div>
         </Text>
 
+        <ChackraLink paddingX={8} color={"blue.500"}>
+          <div>
+            <Link href="/">Back Home</Link>
+          </div>
+        </ChackraLink>
+      </Flex>
+
+      <Flex
+        zIndex={0}
+        width={"100vw"}
+        height={"100vh"}
+        alignItems={"center"}
+        justifyContent={"center"}
+      >
+        <Flex alignItems={"center"} justifyContent={"center"} width={"50%"}>
+          <Heading size={"2xl"}>Welcome Back!</Heading>
+        </Flex>
+
         <Flex
-          flexDir={"column"}
           alignItems={"center"}
           justifyContent={"center"}
-          padding={8}
+          flexDir={"column"}
+          width={"50%"}
+          marginTop={16}
         >
-          <Input placeholder="Username" margin={5} paddingY={6} />
+          <Input
+            placeholder="Username"
+            _placeholder={{ color: "grey" }}
+            paddingY={8}
+            marginY={4}
+            border={"1px"}
+            borderColor={"gray.400"}
+            width={"60%"}
+            borderRadius={"sm"}
+          />
 
-          <Input placeholder="Password" margin={5} paddingY={6} />
+          <Input
+            placeholder="Password"
+            _placeholder={{ color: "grey" }}
+            paddingY={8}
+            marginY={6}
+            border={"1px"}
+            borderColor={"gray.400"}
+            borderRadius={"sm"}
+            width={"60%"}
+          />
 
           <Button
+            width={"60%"}
             backgroundColor={"blue.500"}
-            _hover={{ backgroundColor: "blue.400" }}
-            padding={6}
-            marginY={4}
-            fontSize="md"
+            padding={8}
+            fontSize={"lg"}
+            color={"white"}
+            marginY={6}
             border={0}
             borderRadius={"sm"}
-            width="100%"
-            color={"white"}
+            _hover={{ backgroundColor: "blue.400" }}
           >
             Login
           </Button>
+
+          <ChackraLink paddingX={2} color={"blue.500"}>
+            <div>
+              <Link href="/register">Create an account</Link>
+            </div>
+          </ChackraLink>
         </Flex>
       </Flex>
     </Flex>

@@ -1,10 +1,13 @@
 import { ThemeContainer } from "../contexts/ThemeContainer";
+import { ProvideAuth } from "../hooks//useAuth";
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ThemeContainer>
-      <Component {...pageProps} />
-    </ThemeContainer>
+    <ProvideAuth>
+      <ThemeContainer>
+        <Component {...pageProps} />
+      </ThemeContainer>
+    </ProvideAuth>
   );
 }
 

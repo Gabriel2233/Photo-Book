@@ -1,30 +1,23 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
-import firebase from "firebase/app";
-import "firebase/auth";
+import firebase from "../appUtils/initFirebase";
+import {
+  setUserCookie,
+  getUserFromCookie,
+  removeUserCookie,
+} from "../appUtils/userCookies";
+import { mapUserData } from "../appUtils/mapUserData";
 
-if (!firebase.apps.length) {
-  firebase.initializeApp({
-    apiKey: "AIzaSyCHOv9WV823VHe6CvNR8CbP_LNCOk16Lzs",
-    authDomain: "photoalbum-46a17.firebaseapp.com",
-    databaseURL: "https://photoalbum-46a17.firebaseio.com",
-    projectId: "photoalbum-46a17",
-    storageBucket: "photoalbum-46a17.appspot.com",
-    messagingSenderId: "60689065638",
-    appId: "1:60689065638:web:ca3aa399dfd6e547763667",
-    measurementId: "G-DT4LK9CT8R",
-  });
-}
-
-interface User {
+export interface IUser {
   email: string;
-  password: string;
+  id: string;
+  token: string;
 }
 
 interface Auth {
-  signIn(email: string, password: string): void;
-  signUp(email: string, password: string): void;
+  signIn(email: string, password: string): Promise<IUser>;
+  signUp(email: string, password: string): Promise<IUser>;
   signOut(): void;
-  user: User;
+  user: IUser;
 }
 
 const AuthContext = createContext({});
@@ -42,52 +35,77 @@ export const useAuth = () => {
 };
 
 function useProvideAuth() {
-  const [user, setUser] = useState<User>(null as User);
+  const [user, setUser] = useState<IUser>(null as IUser);
 
   const signIn = async (email: string, password: string) => {
-    const response = await firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password);
+    try {
+      const res = await firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password);
 
-    const userData: User = {
-      email,
-      password,
-    };
+      const data = mapUserData(res.user);
 
-    setUser(userData);
-    return response.user;
+      setUserCookie(data);
+
+      setUser(data);
+
+      return data;
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   const signUp = async (email: string, password: string) => {
-    const response = await firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password);
+    try {
+      const res = await firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password);
 
-    const userData: User = {
-      email,
-      password,
-    };
+      const data = mapUserData(res.user);
 
-    setUser(userData);
-    return response.user;
+      setUserCookie(data);
+
+      setUser(data);
+
+      return data;
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   const signOut = async () => {
-    await firebase.auth().signOut();
+    try {
+      await firebase.auth().signOut();
 
-    setUser(null);
+      removeUserCookie();
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   useEffect(() => {
-    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        console.log(user);
-      } else {
-        setUser(null);
-      }
-    });
+    const cancelAuthListener = firebase
+      .auth()
+      .onIdTokenChanged((user: firebase.User) => {
+        if (user) {
+          const userData = mapUserData(user);
+          setUserCookie(userData);
+          setUser(userData);
+        } else {
+          removeUserCookie();
+          setUser(null);
+        }
+      });
 
-    return () => unsubscribe();
+    const userFromCookie = getUserFromCookie();
+    if (!userFromCookie) {
+      return;
+    }
+    setUser(userFromCookie);
+
+    return () => {
+      cancelAuthListener();
+    };
   }, []);
 
   return { signIn, signUp, signOut, user };

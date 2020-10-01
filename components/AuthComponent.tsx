@@ -1,4 +1,5 @@
 import { Form, Field, Formik } from "formik";
+import firebase from "../appUtils/initFirebase";
 import { useRouter } from "next/router";
 import {
   Button,
@@ -8,6 +9,7 @@ import {
   Text,
   FormErrorMessage,
   FormControl,
+  useToast,
 } from "@chakra-ui/core";
 import Link from "next/link";
 import { MdPhotoCamera } from "react-icons/md";
@@ -27,20 +29,57 @@ interface AuthDataProps {
 export const AuthComponent: React.FC<AuthDataProps> = ({ type }) => {
   const auth = useAuth();
   const router = useRouter();
+  const toast = useToast();
 
-  function authenticate(email: string, password: string) {
+  const signIn = async ({ email, password }) => {
     try {
-      const response =
-        type === "signIn"
-          ? auth.signIn(email, password)
-          : auth.signUp(email, password);
+      const response = await auth.signIn(email, password);
 
-      alert(response);
-      //router.push("/dashboard");
+      const data = response.id;
+
+      if (data) {
+        toast({
+          title: "Success! 📸",
+          description: "Login was successfull",
+          status: "success",
+          duration: 3000,
+        });
+        router.push("/dashboard");
+      }
     } catch (error) {
-      alert(error.message);
+      toast({
+        title: "An error occurred.",
+        description: error.message,
+        status: "error",
+        duration: 9000,
+      });
     }
-  }
+  };
+
+  const signUp = async ({ email, password }) => {
+    try {
+      const response = await auth.signUp(email, password);
+
+      const data = response.id;
+
+      if (data) {
+        toast({
+          title: "Success! 📸",
+          description: "Your account has been created.",
+          status: "success",
+          duration: 3000,
+        });
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      toast({
+        title: "An error occurred.",
+        description: error.message,
+        status: "error",
+        duration: 9000,
+      });
+    }
+  };
 
   return (
     <Flex
@@ -96,7 +135,9 @@ export const AuthComponent: React.FC<AuthDataProps> = ({ type }) => {
           onSubmit={(data, { setSubmitting }) => {
             setSubmitting(true);
             // make async call
-            authenticate(data.email, data.password);
+            {
+              type === "signIn" ? signIn(data) : signUp(data);
+            }
             setSubmitting(false);
           }}
         >

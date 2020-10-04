@@ -1,20 +1,18 @@
-import { Form, Field, Formik } from "formik";
-import firebase from "../appUtils/initFirebase";
+import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import {
   Button,
   Flex,
   Heading,
+  Input,
   Link as ChackraLink,
   Text,
-  FormErrorMessage,
-  FormControl,
   useToast,
 } from "@chakra-ui/core";
 import Link from "next/link";
 import { MdPhotoCamera } from "react-icons/md";
 import * as yup from "yup";
-import { InputElement } from "../components/InputElement";
+import { yupResolver } from "@hookform/resolvers";
 import { useAuth } from "../hooks/useAuth";
 
 const validationSchema = yup.object({
@@ -26,12 +24,21 @@ interface AuthDataProps {
   type: string;
 }
 
+interface FunctionArgs {
+  email: string;
+  password: string;
+}
+
 export const AuthComponent: React.FC<AuthDataProps> = ({ type }) => {
   const auth = useAuth();
   const router = useRouter();
   const toast = useToast();
 
-  const signIn = async ({ email, password }) => {
+  const { handleSubmit, register, errors } = useForm({
+    resolver: yupResolver(validationSchema),
+  });
+
+  const signIn = async ({ email, password }: FunctionArgs) => {
     try {
       const response = await auth.signIn(email, password);
 
@@ -56,12 +63,10 @@ export const AuthComponent: React.FC<AuthDataProps> = ({ type }) => {
     }
   };
 
-  const signUp = async ({ email, password }) => {
+  const signUp = async ({ email, password }: FunctionArgs) => {
     try {
       const response = await auth.signUp(email, password);
-
       const data = response.id;
-
       if (data) {
         toast({
           title: "Success! 📸",
@@ -80,6 +85,8 @@ export const AuthComponent: React.FC<AuthDataProps> = ({ type }) => {
       });
     }
   };
+
+  const submitArgument = type === "signIn" ? signIn : signUp;
 
   return (
     <Flex
@@ -129,69 +136,62 @@ export const AuthComponent: React.FC<AuthDataProps> = ({ type }) => {
           </Heading>
         </Flex>
 
-        <Formik
-          initialValues={{ email: "", password: "" }}
-          validationSchema={validationSchema}
-          onSubmit={(data, { setSubmitting }) => {
-            setSubmitting(true);
-            // make async call
-            {
-              type === "signIn" ? signIn(data) : signUp(data);
-            }
-            setSubmitting(false);
-          }}
+        <Flex
+          width={"50%"}
+          flexDir={"column"}
+          alignItems={"center"}
+          justifyContent={"center"}
         >
-          {({ values, errors, isSubmitting }) => (
-            <Flex width={"50%"}>
-              <Form
-                is={"div"}
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  flexDirection: "column",
-                }}
-              >
-                <Field
-                  type="input"
-                  name="email"
-                  placeholder="Email"
-                  as={InputElement}
-                />
+          <Input
+            type="input"
+            ref={register}
+            name="email"
+            placeholder={"Email"}
+            _placeholder={{ color: "grey" }}
+            paddingY={8}
+            width={"60%"}
+            marginY={4}
+            border={"1px"}
+            borderColor={"gray.400"}
+            borderRadius={"sm"}
+          />
 
-                <Field
-                  type="input"
-                  name="password"
-                  placeholder="Password"
-                  as={InputElement}
-                />
-
-                <Button
-                  width={"60%"}
-                  backgroundColor={"blue.500"}
-                  padding={8}
-                  fontSize={"lg"}
-                  color={"white"}
-                  marginY={6}
-                  border={0}
-                  borderRadius={"sm"}
-                  _hover={{ backgroundColor: "blue.400" }}
-                  isDisabled={isSubmitting}
-                  type="submit"
-                >
-                  {type === "signIn" ? "Login" : "Create an account"}
-                </Button>
-                <Link href={type === "signIn" ? "/register" : "/login"}>
-                  <div>
-                    <ChackraLink paddingY={6} color={"blue.500"}>
-                      {type === "signIn" ? "Create an account" : "Login"}
-                    </ChackraLink>
-                  </div>
-                </Link>
-              </Form>
-            </Flex>
-          )}
-        </Formik>
+          <Input
+            type="input"
+            ref={register}
+            name="password"
+            placeholder={"Password"}
+            _placeholder={{ color: "grey" }}
+            paddingY={8}
+            width={"60%"}
+            marginY={4}
+            border={"1px"}
+            borderColor={"gray.400"}
+            borderRadius={"sm"}
+          />
+          <Button
+            width={"60%"}
+            backgroundColor={"blue.500"}
+            padding={8}
+            fontSize={"lg"}
+            color={"white"}
+            marginY={6}
+            border={0}
+            borderRadius={"sm"}
+            _hover={{ backgroundColor: "blue.400" }}
+            type="submit"
+            onClick={handleSubmit(signIn)}
+          >
+            {type === "signIn" ? "Login" : "Create an account"}
+          </Button>
+          <Link href={type === "signIn" ? "/register" : "/login"}>
+            <div>
+              <ChackraLink paddingY={6} color={"blue.500"}>
+                {type === "signIn" ? "Create an account" : "Login"}
+              </ChackraLink>
+            </div>
+          </Link>
+        </Flex>
       </Flex>
     </Flex>
   );

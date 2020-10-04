@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, createContext } from "react";
 import firebase from "../appUtils/initFirebase";
+import "firebase/auth";
 import {
   setUserCookie,
   getUserFromCookie,

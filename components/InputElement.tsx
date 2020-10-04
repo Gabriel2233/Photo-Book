@@ -1,16 +1,17 @@
-import { Input } from "@chakra-ui/core";
-import { useField, FieldAttributes } from "formik";
+import { Input, InputProps } from "@chakra-ui/core";
+import { useForm } from "react-hook-form";
 
-export const InputElement: React.FC<FieldAttributes<{}>> = ({
+export const InputElement: React.FC<InputProps> = ({
   placeholder,
   ...props
 }) => {
-  const [field, meta] = useField<{}>(props);
-  const errorText = meta.error && meta.touched ? meta.error : "";
+  const { register } = useForm();
+
   return (
     <Input
+      {...props}
+      ref={register}
       placeholder={placeholder}
-      {...field}
       _placeholder={{ color: "grey" }}
       paddingY={8}
       width={"60%"}
@@ -18,6 +19,8 @@ export const InputElement: React.FC<FieldAttributes<{}>> = ({
       border={"1px"}
       borderColor={"gray.400"}
       borderRadius={"sm"}
+      name={props.name}
+      type={props.type}
     />
   );
 };

@@ -180,7 +180,7 @@ export const AuthComponent: React.FC<AuthDataProps> = ({ type }) => {
             borderRadius={"sm"}
             _hover={{ backgroundColor: "blue.400" }}
             type="submit"
-            onClick={handleSubmit(signIn)}
+            onClick={handleSubmit(submitArgument)}
           >
             {type === "signIn" ? "Login" : "Create an account"}
           </Button>

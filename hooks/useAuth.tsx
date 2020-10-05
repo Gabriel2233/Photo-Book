@@ -109,5 +109,19 @@ function useProvideAuth() {
     };
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        const userData = mapUserData(user);
+        setUser(userData);
+      } else {
+        setUser(null);
+      }
+    });
+
+    // Cleanup subscription on unmount
+
+    return () => unsubscribe();
+  }, []);
   return { signIn, signUp, signOut, user };
 }

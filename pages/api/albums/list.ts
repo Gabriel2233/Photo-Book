@@ -1,16 +1,24 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { getUserFromCookie } from "../../../appUtils/userCookies";
 import firebase from "../../../appUtils/initFirebase";
 
-import { firestore } from "firebase";
-
 export default async (req: NextApiRequest, res: NextApiResponse) => {
+  if (req.method !== "GET")
+    return res.status(500).end({ message: "Only GET requests are accepted" });
+
   try {
-    const response = await firebase.firestore().collection("albums").get();
+    const argument = req.query;
 
-    const data = response.forEach((doc) => doc.id);
+    const response = await firebase
+      .firestore()
+      .collection("albums")
+      .where("creatorId", "==", argument.id)
+      .get();
 
-    return res.json({ data });
+    const data = response.docs.map((doc) => doc.data());
+
+    return res.status(201).json(data);
   } catch (error) {
-    return res.json({ message: error.message });
+    return res.status(401).json({ message: error.message });
   }
 };

@@ -6,10 +6,10 @@ export function ProtectRoute(Component) {
   return function () {
     const { user } = useAuth();
     const loading = user === null;
-    const Router = useRouter();
+    const router = useRouter();
 
     useEffect(() => {
-      if (!user && !loading) Router.push("/");
+      if (user === null && !loading) router.push("/");
     }, [user, loading]);
 
     return <Component {...arguments} />;

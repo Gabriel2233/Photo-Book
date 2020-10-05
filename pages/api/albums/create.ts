@@ -2,16 +2,20 @@ import { NextApiRequest, NextApiResponse } from "next";
 import firebase from "../../../appUtils/initFirebase";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
+  if (req.method !== "POST")
+    return res.status(500).end({ message: "Only POST requests are accepted." });
+
   try {
-    const title = req.body;
+    const body = JSON.parse(req.body);
 
     await firebase.firestore().collection("albums").add({
-      title,
+      title: body.title,
       photos: [],
+      creatorId: body.creatorId,
     });
 
-    return res.status(201).json({ message: "ok" });
+    return res.status(201).json({});
   } catch (error) {
-    return res.json({ message: error.message });
+    return res.status(401).json({ message: error.message });
   }
 };

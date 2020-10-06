@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import firebase from "../../../appUtils/initFirebase";
+import firebase, { db } from "../../../appUtils/initFirebase";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== "POST")
@@ -8,7 +8,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const body = JSON.parse(req.body);
 
-    await firebase.firestore().collection("albums").add({
+    await db.collection("albums").add({
       title: body.title,
       photos: [],
       creatorId: body.creatorId,

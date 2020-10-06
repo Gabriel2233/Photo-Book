@@ -1,14 +1,4 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Grid,
-  Heading,
-  Icon,
-  Input,
-  useToast,
-} from "@chakra-ui/core";
-import { MdPhotoCamera } from "react-icons/md";
+import { Button, Flex, Grid, Icon, Input, useToast } from "@chakra-ui/core";
 import { ProtectRoute } from "../components/ProtectRoute";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
@@ -16,8 +6,10 @@ import { yupResolver } from "@hookform/resolvers";
 import useSWR from "swr";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { useAuth } from "../hooks/useAuth";
-import { AlbumCard } from "../components/AlbumCard";
+import { AlbumCard, CardProps } from "../components/AlbumCard";
 import { useRouter } from "next/router";
+import Header from "../components/Header";
+import Link from "next/link";
 
 const fetcher = async (url: string, param: string) => {
   const res = await fetch(url + param);
@@ -89,33 +81,7 @@ function Dashboard() {
 
   return (
     <Flex width={"100vw"} height={"100vh"} flexDir={"column"}>
-      <Flex width="full" alignItems={"center"} justifyContent={"space-between"}>
-        <Flex padding={"6"} alignItems={"center"} justifyContent={"center"}>
-          <Icon as={MdPhotoCamera} color={"blue.500"} size={"42px"} />
-        </Flex>
-
-        <Flex alignItems={"center"} justifyContent={"center"} bg="red">
-          <Button
-            padding={"4"}
-            border={0}
-            color={"white"}
-            borderRadius={"sm"}
-            backgroundColor={"blue.500"}
-            _hover={{ backgroundColor: "blue.400" }}
-          >
-            Albums
-          </Button>
-          <Button
-            padding={"4"}
-            marginX={"6"}
-            border={0}
-            borderRadius={"sm"}
-            onClick={logout}
-          >
-            Logout
-          </Button>
-        </Flex>
-      </Flex>
+      <Header />
 
       <Flex
         width="full"
@@ -164,7 +130,11 @@ function Dashboard() {
         width={"90%"}
       >
         {data.map((el) => (
-          <AlbumCard albumData={el} key={el.title} />
+          <Link href={`/albums/${el.title}`} key={el.title}>
+            <div>
+              <AlbumCard albumData={el} />
+            </div>
+          </Link>
         ))}
       </Grid>
     </Flex>

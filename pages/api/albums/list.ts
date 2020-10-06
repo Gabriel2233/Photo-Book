@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getUserFromCookie } from "../../../appUtils/userCookies";
-import firebase from "../../../appUtils/initFirebase";
+import firebase, { db } from "../../../appUtils/initFirebase";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== "GET")
@@ -9,8 +8,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const argument = req.query;
 
-    const response = await firebase
-      .firestore()
+    const response = await db
       .collection("albums")
       .where("creatorId", "==", argument.id)
       .get();

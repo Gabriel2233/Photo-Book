@@ -3,6 +3,7 @@ import { Flex, Heading, Text } from "@chakra-ui/core";
 export interface CardProps {
   albumData: {
     title: string;
+    id: string;
     photos: Array<string>;
   };
 }

@@ -8,7 +8,7 @@ export const LoadingSpinner = () => {
       alignItems={"center"}
       justifyContent={"center"}
     >
-      <Spinner color={"blue.500"} size={"lg"} />;
+      <Spinner color={"blue.500"} size={"lg"} />
     </Flex>
   );
 };

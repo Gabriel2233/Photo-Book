@@ -12,7 +12,7 @@ import theme from "../styles/theme";
 export const ThemeContainer = ({ children }) => {
   return (
     <ChakraThemeProvider theme={theme}>
-      <ColorModeProvider value={"light"}>
+      <ColorModeProvider value={"dark"}>
         <EmotionThemeProvider theme={theme}>
           <CSSReset />
           {children}

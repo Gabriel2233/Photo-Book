@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import firebase, { db } from "../../../appUtils/initFirebase";
+import { db } from "../../../appUtils/initFirebase";
 
 interface Album {
   creatorId: string;
@@ -19,23 +19,24 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       .where("title", "==", body.title)
       .get();
 
-    const album: firebase.firestore.DocumentData = data.docs.map((doc) =>
-      doc.data()
-    )[0];
+    const albumId = data.docs.map((doc) => doc.id)[0];
 
-    const update = await db
+    const albumData = data.docs.map((doc) => doc.data())[0];
 
+    await db
       .collection("albums")
-      .doc(body.title)
+      .doc(albumId)
       .update({
-        title: album.title,
-        creatorId: album.creatorId,
-        photos: [...album.photos, body.imageUrl],
+        title: albumData.title,
+        photos: [...albumData.photos, body.imageUrl],
+        creatorId: albumData.creatorId,
       });
 
-    console.log(update);
+    const response = await db.collection("albums").doc(albumId).get();
 
-    return res.status(201).json({ update });
+    const updatedAlbum = response.data();
+
+    return res.status(201).json({ updatedAlbum });
   } catch (error) {
     return res.status(401).json({ message: error.message });
   }

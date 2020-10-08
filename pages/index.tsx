@@ -23,12 +23,7 @@ export default function App() {
 
         <Flex>
           <Link href="/login">
-            <Button
-              padding={4}
-              borderRadius={"sm"}
-              _hover={{ backgroundColor: "gray.400" }}
-              border={0}
-            >
+            <Button padding={4} borderRadius={"sm"} border={0}>
               Sign In
             </Button>
           </Link>

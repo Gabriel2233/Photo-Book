@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import firebase, { db } from "../../../appUtils/initFirebase";
+import { db } from "../../../appUtils/initFirebase";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method !== "POST")
@@ -14,7 +14,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       creatorId: body.creatorId,
     });
 
-    return res.status(201).json({});
+    return res.status(201).json({ message: "Success" });
   } catch (error) {
     return res.status(401).json({ message: error.message });
   }

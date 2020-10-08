@@ -1,4 +1,4 @@
-import { Flex, Heading, Text } from "@chakra-ui/core";
+import { Flex, Heading, Text, useColorMode } from "@chakra-ui/core";
 
 export interface CardProps {
   albumData: {
@@ -9,16 +9,17 @@ export interface CardProps {
 }
 
 export const AlbumCard: React.FC<CardProps> = ({ albumData }) => {
+  const { colorMode } = useColorMode();
+
   return (
     <Flex
       flexDir={"column"}
       alignItems={"center"}
       justifyContent={"center"}
-      borderColor={"gray.500"}
+      borderColor={colorMode === "light" ? "gray.500" : "gray.700"}
       borderWidth={1}
       borderRadius={"sm"}
       margin={8}
-      boxShadow={"0px 4px 14px gray.500"}
     >
       <Flex
         width={"full"}

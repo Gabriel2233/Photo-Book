@@ -6,16 +6,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(500).end({ message: "Only GET requests are accepted" });
 
   try {
-    const argument = req.query;
+    const body = req.query;
 
     const response = await db
       .collection("albums")
-      .where("creatorId", "==", argument.id)
+      .where("creatorId", "==", body.id)
+      .where("title", "==", body.title)
       .get();
 
-    const data = response.docs.map((doc) => doc.data());
+    const updatedAlbum = response.docs.map((doc) => doc.data())[0];
 
-    return res.status(201).json(data);
+    return res.status(201).json(updatedAlbum);
   } catch (error) {
     return res.status(401).json({ message: error.message });
   }

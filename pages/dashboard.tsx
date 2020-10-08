@@ -1,15 +1,16 @@
-import { Button, Flex, Grid, Icon, Input, useToast } from "@chakra-ui/core";
+import { Button, Flex, Grid, Input, useToast } from "@chakra-ui/core";
 import { ProtectRoute } from "../components/ProtectRoute";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { useAuth } from "../hooks/useAuth";
 import { AlbumCard, CardProps } from "../components/AlbumCard";
 import { useRouter } from "next/router";
 import Header from "../components/Header";
 import Link from "next/link";
+import firebase from "../appUtils/initFirebase";
 
 const fetcher = async (url: string, param: string) => {
   const res = await fetch(url + param);
@@ -42,12 +43,6 @@ function Dashboard() {
     (url, params) => fetcher(url, params)
   );
 
-  const logout = () => {
-    signOut();
-
-    router.push("/");
-  };
-
   const createAlbum = async ({ title }: Value) => {
     const body = JSON.stringify({ title, creatorId: user.id });
 
@@ -65,6 +60,8 @@ function Dashboard() {
           duration: 3000,
         });
       }
+
+      mutate(["/api/albums/list?id=", appUser.id]);
     } catch (error) {
       toast({
         title: "An error ocurred.",
@@ -78,6 +75,10 @@ function Dashboard() {
   if (!data) return <LoadingSpinner />;
 
   if (error) return <h1>Failed to get data...</h1>;
+
+  const cUser = firebase.auth().currentUser;
+
+  console.log(cUser && cUser.uid);
 
   return (
     <Flex width={"100vw"} height={"100vh"} flexDir={"column"}>
@@ -130,7 +131,11 @@ function Dashboard() {
         width={"90%"}
       >
         {data.map((el) => (
-          <Link href={`/albums/${el.title}`} key={el.title}>
+          <Link
+            href="/albums/[albumTitle]"
+            as={`/albums/${el.title}`}
+            key={el.title}
+          >
             <div>
               <AlbumCard albumData={el} />
             </div>
